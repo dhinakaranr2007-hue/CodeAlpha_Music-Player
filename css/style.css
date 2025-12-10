@@ -1,0 +1,256 @@
+/* --- Global Reset and Setup --- */
+:root {
+    /* Colors matching the vibrant, dark blue/purple look of the image */
+    --player-bg: rgba(40, 45, 60, 0.6); /* Dark Blue Semi-transparent */
+    --primary-color: #00ADB5; /* Vibrant Teal/Cyan for highlights */
+    --text-color: #E0E0FF; /* Soft white/purple text */
+    --shadow-soft: rgba(0, 0, 0, 0.4);
+    --shadow-hard: rgba(0, 0, 0, 0.8);
+    --vibrant-glow: 0 0 15px rgba(0, 173, 181, 0.8); /* Stronger glow */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: linear-gradient(135deg, #181923, #1F2833);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Montserrat', sans-serif;
+    color: var(--text-color);
+    overflow: hidden; 
+}
+
+/* --- Player Container (Glassmorphic Effect) --- */
+.player-container {
+    background-color: var(--player-bg);
+    backdrop-filter: blur(15px); 
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 30px; 
+    box-shadow: 0 20px 60px var(--shadow-hard), inset 0 0 15px rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1); 
+    padding: 50px 30px 30px 30px;
+    width: 380px;
+    text-align: center;
+    position: relative;
+    animation: fadeIn 1s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Animated Arm/Disc Container Setup --- */
+
+/* Record Player Arm */
+.player-arm-container {
+    position: absolute;
+    top: 30px; 
+    right: 30px; 
+    z-index: 20; 
+    transform-origin: 10% 10%; 
+    transform: translateX(0) rotate(20deg); 
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
+}
+
+#player-arm {
+    width: 15px; 
+    height: 150px; 
+    background: linear-gradient(to top, #393E46, #606470); 
+    border-radius: 50% / 0 0 100% 100%; 
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+}
+
+/* Bright cyan tip on the arm */
+#player-arm::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    box-shadow: var(--vibrant-glow);
+}
+
+/* Play State: Arm moves into position */
+.player-container.playing .player-arm-container {
+    transform: translateX(-140px) translateY(10px) rotate(-15deg); 
+}
+
+/* --- Album Art (Animated Disc) --- */
+.img-container {
+    width: 280px; 
+    height: 280px;
+    margin: 0 auto 30px;
+    box-shadow: 0 8px 25px var(--shadow-soft);
+    border-radius: 50%; 
+    overflow: hidden;
+    border: 8px solid rgba(40, 45, 60, 0.9);
+    position: relative; 
+}
+
+.img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+    transform: rotate(0deg); 
+}
+
+/* Rotation is applied to the image element when playing */
+.img-container.play img {
+    animation: rotate 15s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* --- DVD/CD Fixed Center Hole and Ring Effect --- */
+
+/* Inner Reflective Ring (Metallic silver look) */
+.img-container::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 35%;
+    height: 35%;
+    border-radius: 50%;
+    background: radial-gradient(circle, #E0E0E0 0%, #A0A0A0 50%, #505050 100%);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* Center Hole (Glossy black) */
+.img-container::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10%; 
+    height: 10%;
+    border-radius: 50%;
+    background: #000000; 
+    border: 2px solid #333;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.9);
+    z-index: 20;
+    pointer-events: none;
+}
+
+/* --- Song Info and Controls (Styling) --- */
+#title {
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+    color: var(--primary-color);
+    text-shadow: var(--vibrant-glow);
+}
+
+#artist {
+    font-size: 1rem;
+    color: var(--text-color);
+    opacity: 0.7;
+    margin-bottom: 20px;
+}
+
+.progress-container {
+    background: #393E46;
+    border-radius: 5px;
+    cursor: pointer;
+    height: 6px; 
+    margin: 10px 0;
+    box-shadow: inset 0 1px 3px var(--shadow-soft); 
+}
+
+.progress {
+    background-color: var(--primary-color);
+    border-radius: 5px;
+    height: 100%;
+    width: 0%; 
+    transition: width 0.1s linear;
+    box-shadow: 0 0 5px var(--primary-color); 
+}
+
+.time-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    margin-bottom: 30px;
+    color: var(--text-color);
+    opacity: 0.7;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.action-btn {
+    background: rgba(50, 50, 70, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+    font-size: 1rem;
+    padding: 12px;
+    border-radius: 10px; 
+    box-shadow: 3px 3px 6px var(--shadow-soft);
+    transition: all 0.2s ease-out;
+    cursor: pointer;
+}
+
+.action-btn:hover {
+    color: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-color);
+}
+
+.action-btn-big {
+    color: var(--primary-color);
+    font-size: 1.5rem; 
+    padding: 15px 25px;
+    border-radius: 15px;
+    box-shadow: 5px 5px 10px var(--shadow-hard), 0 0 15px var(--primary-color);
+}
+
+/* Volume Control */
+.volume-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    color: var(--primary-color);
+    margin-top: 15px;
+}
+
+#volume {
+    width: 180px;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #393E46;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#volume::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    box-shadow: 0 0 8px var(--primary-color);
+}
